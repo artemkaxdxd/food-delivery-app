@@ -15,6 +15,8 @@ var ( // Errors
 	ErrInvalidEmail      = errors.New("invalid email")
 	ErrInvalidPwd        = errors.New("invalid password")
 	ErrInvalidOrderOwner = errors.New("invalid order owner")
+
+	ErrEmptyOrderItems = errors.New("empty order items")
 )
 
 type ServiceCode int
@@ -28,6 +30,7 @@ const (
 	CodeNotFound            ServiceCode = 5
 	CodeConflict            ServiceCode = 6
 	CodeForbidden           ServiceCode = 7
+	CodeEmptyOrder          ServiceCode = 8
 )
 
 const ( // Response Messages

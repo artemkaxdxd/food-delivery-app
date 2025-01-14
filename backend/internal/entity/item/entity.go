@@ -4,6 +4,8 @@ type Item struct {
 	ID          uint
 	Title       string
 	Description string
+	Price       int64 // Price in cents
+	ImageURL    string
 	CreatedAt   int64
 }
 

@@ -52,6 +52,7 @@ func Run(cfg config.Config) {
 		&entityitem.Item{},
 		&entityuser.User{},
 		&entityuserorder.UserOrder{},
+		&entityuserorder.UserOrderItem{},
 	); err != nil {
 		l.Fatal("Auto migration failed: ", err)
 	}

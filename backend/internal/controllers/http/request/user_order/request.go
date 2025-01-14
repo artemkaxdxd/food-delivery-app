@@ -5,14 +5,26 @@ import (
 	"time"
 )
 
-type UserOrder struct {
-	Address     string `json:"address" valid:"required,stringlength(5|50)"`
-	Comment     string `json:"comment"`
-	PhoneNumber string `json:"phone_number" valid:"required"`
-	Email       string `json:"email" valid:"required,email"`
-}
+type (
+	Order struct {
+		Address     string      `json:"address" valid:"required,stringlength(5|50)"`
+		Comment     string      `json:"comment"`
+		PhoneNumber string      `json:"phone_number" valid:"required"`
+		Email       string      `json:"email" valid:"required,email"`
+		Items       []OrderItem `json:"items"`
+	}
 
-func (u UserOrder) ToEntity(userID uint) userorder.UserOrder {
+	OrderItem struct {
+		ItemID uint `json:"item_id"`
+		Amount uint `json:"amount"`
+	}
+
+	OrderStatus struct {
+		Status userorder.OrderStatus `json:"status" valid:"required"`
+	}
+)
+
+func (u Order) ToEntity(userID uint) userorder.UserOrder {
 	return userorder.UserOrder{
 		UserID:      userID,
 		Address:     u.Address,
@@ -24,7 +36,7 @@ func (u UserOrder) ToEntity(userID uint) userorder.UserOrder {
 	}
 }
 
-func (u UserOrder) ToEntityUpdate(orderID uint) userorder.UserOrder {
+func (u Order) ToEntityUpdate(orderID uint) userorder.UserOrder {
 	return userorder.UserOrder{
 		ID:          orderID,
 		Address:     u.Address,
@@ -32,4 +44,24 @@ func (u UserOrder) ToEntityUpdate(orderID uint) userorder.UserOrder {
 		PhoneNumber: u.PhoneNumber,
 		Email:       u.Email,
 	}
+}
+
+func (u OrderItem) ToEntity(orderID uint) userorder.UserOrderItem {
+	return userorder.UserOrderItem{
+		UserOrderID: orderID,
+		ItemID:      u.ItemID,
+		Amount:      u.Amount,
+	}
+}
+
+func ItemsToEntity(items []OrderItem, orderID uint) []userorder.UserOrderItem {
+	if len(items) == 0 {
+		return nil
+	}
+
+	resp := make([]userorder.UserOrderItem, len(items))
+	for i, v := range items {
+		resp[i] = v.ToEntity(orderID)
+	}
+	return resp
 }

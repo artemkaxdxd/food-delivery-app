@@ -8,7 +8,7 @@ func ServiceCodeToHttpStatus(code ServiceCode) int {
 	switch code {
 	case CodeOK:
 		return http.StatusOK
-	case CodeBadRequest:
+	case CodeBadRequest, CodeEmptyOrder:
 		return http.StatusBadRequest
 	case CodeUnprocessableEntity, CodeDatabaseError:
 		return http.StatusUnprocessableEntity

@@ -41,7 +41,7 @@ func (h handler) getOrders(c *gin.Context) {
 func (h handler) createOrder(c *gin.Context) {
 	claims := middleware.GetClaims(c.Request.Context())
 
-	var body userorder.UserOrder
+	var body userorder.Order
 	if err := c.BindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, response.NewErr(config.CodeBadRequest, err.Error()))
 		return
@@ -67,7 +67,7 @@ func (h handler) updateOrder(c *gin.Context) {
 		return
 	}
 
-	var body userorder.UserOrder
+	var body userorder.Order
 	if err := c.BindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, response.NewErr(config.CodeBadRequest, err.Error()))
 		return
@@ -79,6 +79,32 @@ func (h handler) updateOrder(c *gin.Context) {
 	}
 
 	svcCode, err := h.svc.UpdateOrder(c.Request.Context(), claims.ID, orderID, body)
+	if err != nil {
+		c.JSON(config.ServiceCodeToHttpStatus(svcCode), response.NewErr(svcCode, err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, response.New(svcCode).SetDescription(config.MsgUpdateOK))
+}
+
+func (h handler) updateOrderStatus(c *gin.Context) {
+	claims := middleware.GetClaims(c.Request.Context())
+	orderID := utils.ParseUintParam(c.Param("order_id"), c)
+	if c.IsAborted() {
+		return
+	}
+
+	var body userorder.OrderStatus
+	if err := c.BindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, response.NewErr(config.CodeBadRequest, err.Error()))
+		return
+	}
+
+	if _, err := h.validator.ValidateStruct(body); err != nil {
+		c.JSON(http.StatusBadRequest, response.NewErr(config.CodeBadRequest, err.Error()))
+		return
+	}
+
+	svcCode, err := h.svc.UpdateOrderStatus(c.Request.Context(), claims.ID, orderID, body.Status)
 	if err != nil {
 		c.JSON(config.ServiceCodeToHttpStatus(svcCode), response.NewErr(svcCode, err.Error()))
 		return
