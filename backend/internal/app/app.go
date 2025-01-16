@@ -34,6 +34,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -71,9 +72,12 @@ func Run(cfg config.Config) {
 	gin.SetMode(gin.ReleaseMode)
 	g := gin.New()
 
+	config.InitCorsConfig()
+
 	g.Use(
 		gin.Logger(),
 		gin.Recovery(),
+		cors.New(config.CorsConfig),
 	)
 
 	// Handlers
